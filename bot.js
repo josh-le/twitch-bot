@@ -81,7 +81,7 @@ function handleWebSocketMessage(data) {
 		    })
 
 		    // send notification
-		    exec(`osascript -e 'display notification "${data.payload.event.message.text}" with title "${data.payload.event.chatter_user_login}"'`, (error, stdout, stderr) => {
+		    exec(`osascript -e 'display notification "${data.payload.event.message.text}" with title "${data.payload.event.chatter_user_login}" sound name "Tink"'`, (error, stdout, stderr) => {
 			    console.log('stdout: ' + stdout);
 			    console.log('stderr: ' + stderr);
 			    if (error !== null) {
