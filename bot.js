@@ -1,6 +1,7 @@
 import WebSocket from 'ws';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import { exec } from 'child_process';
 
 dotenv.config();
 
@@ -71,13 +72,22 @@ function handleWebSocketMessage(data) {
 	    switch (data.metadata.subscription_type) {
 		case 'channel.chat.message':
 		    // First, print the message to the program's console.
-			console.log(`MSG #${data.payload.event.broadcaster_user_login} <${data.payload.event.chatter_user_login}> ${data.payload.event.message.text}`);
+		    console.log(`MSG #${data.payload.event.broadcaster_user_login} <${data.payload.event.chatter_user_login}> ${data.payload.event.message.text}`);
 
 		    // write message to txt file for bar
 		    fs.writeFile('last-message.txt', data.payload.event.message.text, (err) => {
 			if (err) throw err;
 			console.log('wrote last message');
 		    })
+
+		    // send notification
+		    exec(`osascript -e 'display notification "${data.payload.event.message.text}" with title "${data.payload.event.chatter_user_login}"'`, (error, stdout, stderr) => {
+			    console.log('stdout: ' + stdout);
+			    console.log('stderr: ' + stderr);
+			    if (error !== null) {
+				console.log('exec error: ' + error);
+			    }
+			});
 
 		    // Then check to see if that message was "HeyGuys"
 		    if (data.payload.event.message.text.trim() == "HeyGuys") {
